@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: api-gateway
+  
+  cloud:
+    gateway:
+      routes:
+        # Translation Service Routes
+        - id: translation-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/translate, /api/languages/**, /api/translation/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /api/$\{segment}
+        
+        # User Service Routes
+        - id: user-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /api/$\{segment}
+        
+        # Speech Recognition Service Routes
+        - id: speech-recognition-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/speech-to-text
+          filters:
+            - RewritePath=/api/(?<segment>.*), /api/$\{segment}
+        
+        # Speech Synthesis Service Routes
+        - id: speech-synthesis-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/text-to-speech, /api/voices
+          filters:
+            - RewritePath=/api/(?<segment>.*), /api/$\{segment}
+      
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: false
+
+server:
+  port: 8080
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,gateway
+
+# Logging
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
