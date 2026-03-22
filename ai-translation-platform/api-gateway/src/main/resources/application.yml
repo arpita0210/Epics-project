@@ -11,7 +11,7 @@ spring:
           predicates:
             - Path=/api/translate, /api/languages/**, /api/translation/**
           filters:
-            - RewritePath=/api/(?<segment>.*), /api/$\{segment}
+            - RewritePath=/api/(?<segment>.*), /api/${segment}
         
         # User Service Routes
         - id: user-service
@@ -19,7 +19,7 @@ spring:
           predicates:
             - Path=/api/auth/**
           filters:
-            - RewritePath=/api/(?<segment>.*), /api/$\{segment}
+            - RewritePath=/api/(?<segment>.*), /api/${segment}
         
         # Speech Recognition Service Routes
         - id: speech-recognition-service
@@ -27,7 +27,7 @@ spring:
           predicates:
             - Path=/api/speech-to-text
           filters:
-            - RewritePath=/api/(?<segment>.*), /api/$\{segment}
+            - RewritePath=/api/(?<segment>.*), /api/${segment}
         
         # Speech Synthesis Service Routes
         - id: speech-synthesis-service
@@ -35,12 +35,14 @@ spring:
           predicates:
             - Path=/api/text-to-speech, /api/voices
           filters:
-            - RewritePath=/api/(?<segment>.*), /api/$\{segment}
+            - RewritePath=/api/(?<segment>.*), /api/${segment}
       
       globalcors:
         corsConfigurations:
           '[/**]':
-            allowedOrigins: "*"
+            allowedOrigins:
+              - "http://localhost:5173"
+              - "http://localhost:3000"
             allowedMethods:
               - GET
               - POST
@@ -48,7 +50,8 @@ spring:
               - DELETE
               - OPTIONS
             allowedHeaders: "*"
-            allowCredentials: false
+            allowCredentials: true
+            maxAge: 3600
 
 server:
   port: 8080
